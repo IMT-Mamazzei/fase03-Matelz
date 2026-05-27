@@ -33,9 +33,9 @@ non terminal expr;
 
 /* TODO 1: Declare a precedência para resolver a ambiguidade matemática. */
 /* Dica: O operador mais embaixo tem a MAIOR precedência!                */
-precedence left REL_OP;
-precedence left ADD_OP;
-precedence left MUL_OP;
+%left REL_OP;
+%left ADD_OP;
+%left MUL_OP;
 
 /* ========================================================================= */
 /* REGRAS DA GRAMÁTICA                                                       */

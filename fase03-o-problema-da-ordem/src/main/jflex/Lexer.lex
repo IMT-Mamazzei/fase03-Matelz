@@ -21,65 +21,48 @@ import java_cup.runtime.Symbol;
     }
 %}
 
-/* ========================================================================= */
-/* MACROS                                                                     */
-/* ========================================================================= */
-LineTerminator    = \r|\n|\r\n
-WhiteSpace        = {LineTerminator} | [ \t\f]
-
-Number            = [0-9]+(\.[0-9]+)?([Ee][+-]?[0-9]+)?
-
-Letter            = [a-zA-Z]
-Digit             = [0-9]
-Identifier        = {Letter}({Letter}|{Digit}|_){0,31}
-OversizedIdentifier = {Letter}({Letter}|{Digit}|_){32,}
+LineTerminator = \r|\n|\r\n
+WhiteSpace     = {LineTerminator} | [ \t\f]
+Number         = [0-9]+(\.[0-9]+)?([Ee][+-]?[0-9]+)?
+Letter         = [a-zA-Z]
+Digit          = [0-9]
+Identifier     = {Letter}({Letter}|{Digit}|_){0,31}
+OversizedIdentifier = {Letter}({Letter}|{Digit}|_){32}({Letter}|{Digit}|_)*
 
 %%
-/* ========================================================================= */
-/* REGRAS LÉXICAS                                                             */
-/* ========================================================================= */
 
 <YYINITIAL> {
 
-    {WhiteSpace}    { /* ignora */ }
+    {WhiteSpace}        { /* ignorar */ }
 
-    /* Palavras reservadas */
-    "if"            { return symbol(sym.IF); }
-    "then"          { return symbol(sym.THEN); }
-    "else"          { return symbol(sym.ELSE); }
-    "while"         { return symbol(sym.WHILE); }
+    "if"                { return symbol(sym.IF); }
+    "then"              { return symbol(sym.THEN); }
+    "else"              { return symbol(sym.ELSE); }
+    "while"             { return symbol(sym.WHILE); }
 
-    /* Pontuação */
-    "("             { return symbol(sym.LPAREN); }
-    ")"             { return symbol(sym.RPAREN); }
-    "{"             { return symbol(sym.LBRACE); }
-    "}"             { return symbol(sym.RBRACE); }
-    ";"             { return symbol(sym.SEMI); }
+    "("                 { return symbol(sym.LPAREN); }
+    ")"                 { return symbol(sym.RPAREN); }
+    "{"                 { return symbol(sym.LBRACE); }
+    "}"                 { return symbol(sym.RBRACE); }
+    ";"                 { return symbol(sym.SEMI); }
 
-    /* Operadores relacionais (duplos antes dos simples!) */
-    "=="            { return symbol(sym.REL_OP, yytext()); }
-    "!="            { return symbol(sym.REL_OP, yytext()); }
-    "<="            { return symbol(sym.REL_OP, yytext()); }
-    ">="            { return symbol(sym.REL_OP, yytext()); }
-    "<"             { return symbol(sym.REL_OP, yytext()); }
-    ">"             { return symbol(sym.REL_OP, yytext()); }
+    "=="                { return symbol(sym.REL_OP, yytext()); }
+    "!="                { return symbol(sym.REL_OP, yytext()); }
+    "<="                { return symbol(sym.REL_OP, yytext()); }
+    ">="                { return symbol(sym.REL_OP, yytext()); }
+    "<"                 { return symbol(sym.REL_OP, yytext()); }
+    ">"                 { return symbol(sym.REL_OP, yytext()); }
+    "="                 { return symbol(sym.ASSIGN); }
 
-    /* Atribuição (simples, depois dos relacionais) */
-    "="             { return symbol(sym.ASSIGN); }
+    "+" | "-"           { return symbol(sym.ADD_OP, yytext()); }
+    "*" | "/" | "%"     { return symbol(sym.MUL_OP, yytext()); }
 
-    /* Operadores aditivos */
-    "+" | "-"       { return symbol(sym.ADD_OP, yytext()); }
+    {Identifier}        { return symbol(sym.ID, yytext()); }
+    {Number}            { return symbol(sym.NUMBER, yytext()); }
 
-    /* Operadores multiplicativos */
-    "*" | "/" | "%" { return symbol(sym.MUL_OP, yytext()); }
+    {OversizedIdentifier} { throw new RuntimeException("Erro Lexico: Identificador gigante -> " + yytext()); }
 
-    /* Identificadores e números */
-    {OversizedIdentifier} { throw new RuntimeException("Erro Léxico: Identificador muito grande -> " + yytext()); }
-    {Identifier}    { return symbol(sym.ID, yytext()); }
-    {Number}        { return symbol(sym.NUMBER, yytext()); }
-
-    /* Fallback */
-    .               { throw new RuntimeException("Erro Léxico: Caractere ilegal -> " + yytext()); }
+    .   { throw new RuntimeException("Erro Lexico: Caractere Ilegal -> " + yytext()); }
 }
 
-<<EOF>>             { return symbol(sym.EOF, ""); }
+<<EOF>> { return symbol(sym.EOF); }

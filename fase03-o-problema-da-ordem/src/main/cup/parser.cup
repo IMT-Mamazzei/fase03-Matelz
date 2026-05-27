@@ -33,9 +33,9 @@ non terminal expr;
 
 /* TODO 1: Declare a precedência para resolver a ambiguidade matemática. */
 /* Dica: O operador mais embaixo tem a MAIOR precedência!                */
+%left REL_OP;
 %left ADD_OP;
 %left MUL_OP;
-%left REL_OP;
 
 /* ========================================================================= */
 /* REGRAS DA GRAMÁTICA                                                       */
@@ -45,7 +45,6 @@ start with program;
 
 /* TODO 2: Como definir um programa que é uma lista de comandos? */
 program ::= stmt_list
-          | /* epsilon - programa vazio */
           ;
 
 /* TODO 3: Como definir uma lista recursiva no BNF? */
@@ -78,9 +77,9 @@ null_stmt ::= SEMI
             ;
 
 /* TODO 6: Regras de expressões (aritmética, relacional, etc) */
-expr ::= expr ADD_OP expr
-       | expr MUL_OP expr
-       | expr REL_OP expr
+expr ::= expr ADD_OP expr %prec ADD_OP
+       | expr MUL_OP expr %prec MUL_OP
+       | expr REL_OP expr %prec REL_OP
        | LPAREN expr RPAREN
        | NUMBER
        | ID

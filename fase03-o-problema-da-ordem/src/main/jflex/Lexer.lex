@@ -38,6 +38,7 @@ Number = [0-9]+(\.[0-9]+)?([Ee][+-]?[0-9]+)?
 Letter = [a-zA-Z]
 Digit  = [0-9]
 Identifier = {Letter}({Letter}|{Digit}|_){0,31}
+OversizedIdentifier = {Letter}({Letter}|{Digit}|_){32,}
 
 %%
 /* ========================================================================= */
@@ -49,25 +50,32 @@ Identifier = {Letter}({Letter}|{Digit}|_){0,31}
     /* Regra para ignorar espaços em branco */
     {WhiteSpace}    { /* Não faz nada */ }
 
-    /* TODO 3: Palavras Reservadas (if, then, else, while) */
+    /* Palavras Reservadas (if, then, else, while) */
     "if"            { return symbol(sym.IF); }
     "then"          { return symbol(sym.THEN); }
-    /* Adicione as demais aqui... */
+    "else"          { return symbol(sym.ELSE); }
+    "while"         { return symbol(sym.WHILE); }
 
-    /* TODO 4: Pontuação ( ) { } ; */
+    /* Pontuação ( ) { } ; */
     \(              { return symbol(sym.LPAREN); }
-    /* Adicione as demais aqui... */
+    \)              { return symbol(sym.RPAREN); }
+    \{              { return symbol(sym.LBRACE); }
+    \}              { return symbol(sym.RBRACE); }
+    ;               { return symbol(sym.SEMI); }
 
-    /* TODO 5: Operadores de Atribuição e Relacionais (=, ==, !=, <, >, <=, >=) */
-    /* CUIDADO COM A ORDEM! O JFlex casa a regra que aparece primeiro se houver empate de tamanho. */
+    /* Operadores de Atribuição e Relacionais (=, ==, !=, <, >, <=, >=) */
     /* Coloque os operadores duplos antes dos simples! */
+    "=="            { return symbol(sym.REL_OP, yytext()); }
+    "!="            { return symbol(sym.REL_OP, yytext()); }
+    "<="            { return symbol(sym.REL_OP, yytext()); }
+    ">="            { return symbol(sym.REL_OP, yytext()); }
+    "<"             { return symbol(sym.REL_OP, yytext()); }
+    ">"             { return symbol(sym.REL_OP, yytext()); }
     "="             { return symbol(sym.ASSIGN); }
-    /* Adicione os relacionais aqui e retorne Tag.REL_OP ... */
 
-    /* TODO 6: Operadores Matemáticos (+, -, *, /, %) */
-    /* Dica: "+" | "-" retornam Tag.ADD_OP. Os outros retornam Tag.MUL_OP */
+    /* Operadores Matemáticos (+, -, *, /, %) */
     "+" | "-"       { return symbol(sym.ADD_OP, yytext()); }
-    /* Adicione as multiplicações aqui... */
+    "*" | "/" | "%"  { return symbol(sym.MUL_OP, yytext()); }
 
     /* Regras para as Macros */
     {Identifier}    { return symbol(sym.ID, yytext()); }

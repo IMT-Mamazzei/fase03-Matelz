@@ -28,34 +28,31 @@ non terminal assign_stmt, if_stmt, while_stmt, block_stmt, null_stmt;
 non terminal expr;
 
 /* ========================================================================= */
-/* PRECEDÊNCIA E ASSOCIATIVIDADE                                              */
-/* Ordem crescente de precedência: quem vem DEPOIS tem MAIOR precedência.    */
+/* PRECEDÊNCIA E ASSOCIATIVIDADE                                             */
 /* ========================================================================= */
 
-precedence left REL_OP;   /* menor precedência: ==, !=, <, >, <=, >=  */
-precedence left ADD_OP;   /* média precedência: + e -                   */
-precedence left MUL_OP;   /* maior precedência: *, / e %               */
+/* TODO 1: Declare a precedência para resolver a ambiguidade matemática. */
+/* Dica: O operador mais embaixo tem a MAIOR precedência!                */
+precedence left REL_OP;
+precedence left ADD_OP;
+precedence left MUL_OP;
 
 /* ========================================================================= */
-/* REGRAS DA GRAMÁTICA (BNF puro — sem [ ] nem { })                         */
+/* REGRAS DA GRAMÁTICA                                                       */
 /* ========================================================================= */
 
 start with program;
 
-/* Um programa é uma lista de comandos (possivelmente vazia) */
+/* TODO 2: Como definir um programa que é uma lista de comandos? */
 program ::= stmt_list
           ;
 
-/*
- * Lista de comandos usando recursão à esquerda.
- * A produção vazia (épsilon) permite blocos vazios: { }
- * e também permite { ; ; ; } através de null_stmt.
- */
+/* TODO 3: Como definir uma lista recursiva no BNF? */
 stmt_list ::= stmt_list stmt
-            | /* vazio (épsilon) */
+            | stmt
             ;
 
-/* Um comando pode ser qualquer uma das cinco formas */
+/* TODO 4: Declaração dos comandos (assign, if, while, block, null) */
 stmt ::= assign_stmt
        | if_stmt
        | while_stmt
@@ -63,40 +60,26 @@ stmt ::= assign_stmt
        | null_stmt
        ;
 
-/* Atribuição: ID = expressão ; */
-assign_stmt ::= ID ASSIGN expr SEMI
-              ;
+assign_stmt ::= ID ASSIGN expr SEMI ;
 
-/*
- * Estrutura if/then com else opcional.
- * Duas produções separadas evitam o problema do "dangling else":
- * a declaração de precedência do CUP resolve o conflito shift/reduce
- * sempre fazendo shift, associando o else ao if mais interno — comportamento correto.
- */
+/* TODO 5: Implemente o IF, WHILE, BLOCO e NULL */
 if_stmt ::= IF LPAREN expr RPAREN THEN stmt
           | IF LPAREN expr RPAREN THEN stmt ELSE stmt
           ;
 
-/* Estrutura while: while ( expressão ) bloco_ou_comando */
 while_stmt ::= WHILE LPAREN expr RPAREN stmt
              ;
 
-/* Bloco: { lista_de_comandos }  — stmt_list pode ser vazia, logo { } é válido */
 block_stmt ::= LBRACE stmt_list RBRACE
              ;
 
-/* Comando nulo: apenas um ponto e vírgula */
 null_stmt ::= SEMI
             ;
 
-/*
- * Expressões aritméticas e relacionais.
- * As diretivas de precedência declaradas acima resolvem os
- * conflitos shift/reduce sem ambiguidade.
- */
-expr ::= expr ADD_OP expr
-       | expr MUL_OP expr
-       | expr REL_OP expr
+/* TODO 6: Regras de expressões (aritmética, relacional, etc) */
+expr ::= expr ADD_OP expr %prec ADD_OP
+       | expr MUL_OP expr %prec MUL_OP
+       | expr REL_OP expr %prec REL_OP
        | LPAREN expr RPAREN
        | NUMBER
        | ID

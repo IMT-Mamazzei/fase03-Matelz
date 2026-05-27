@@ -33,9 +33,7 @@ non terminal expr;
 
 /* TODO 1: Declare a precedência para resolver a ambiguidade matemática. */
 /* Dica: O operador mais embaixo tem a MAIOR precedência!                */
-%left ADD_OP;
-%left MUL_OP;
-%left REL_OP;
+/* precedence left ... ; */
 
 /* ========================================================================= */
 /* REGRAS DA GRAMÁTICA                                                       */
@@ -44,44 +42,20 @@ non terminal expr;
 start with program;
 
 /* TODO 2: Como definir um programa que é uma lista de comandos? */
-program ::= stmt_list
-          | /* epsilon - programa vazio */
-          ;
+program ::= /* Escreva a regra aqui */ ;
 
 /* TODO 3: Como definir uma lista recursiva no BNF? */
-stmt_list ::= stmt_list stmt
-            | stmt
-            ;
+stmt_list ::= /* Escreva a regra aqui */ ;
 
 /* TODO 4: Declaração dos comandos (assign, if, while, block, null) */
-stmt ::= assign_stmt
-       | if_stmt
-       | while_stmt
-       | block_stmt
-       | null_stmt
-       ;
+stmt ::= /* Escreva a regra aqui */ ;
 
 assign_stmt ::= ID ASSIGN expr SEMI ;
 
 /* TODO 5: Implemente o IF, WHILE, BLOCO e NULL */
-if_stmt ::= IF LPAREN expr RPAREN THEN stmt
-          | IF LPAREN expr RPAREN THEN stmt ELSE stmt
-          ;
-
-while_stmt ::= WHILE LPAREN expr RPAREN stmt
-             ;
-
-block_stmt ::= LBRACE stmt_list RBRACE
-             ;
-
-null_stmt ::= SEMI
-            ;
+/* if_stmt ::= ... */
 
 /* TODO 6: Regras de expressões (aritmética, relacional, etc) */
 expr ::= expr ADD_OP expr
-       | expr MUL_OP expr
-       | expr REL_OP expr
-       | LPAREN expr RPAREN
-       | NUMBER
-       | ID
+       /* Adicione MUL_OP, REL_OP, parenteses, NUMBER e ID */
        ;
